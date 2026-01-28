@@ -1,17 +1,26 @@
-#include <iostream>
-#include <vector>
-
-extern "C" {
-    // Función para procesar modelos locales a nivel de hardware
-    void ejecutar_tensor(float* datos, int tam) {
-        for(int i = 0; i < tam; i++) {
-            datos[i] *= 0.85f; // Simulación de cuantificación
-        }
-        std::cout << "[C++ HARDWARE] Procesamiento de tensores optimizado." << std::endl;
-    }
+static void GuardarMemoriaEterna(string dato)
+{
+    string log = $"[{DateTime.Now}] {dato}";
+    // Cifrado simple para que no sea texto plano en el SSD
+    byte[] bytesParaCifrar = System.Text.Encoding.UTF8.GetBytes(log);
+    string datoCifrado = Convert.ToBase64String(bytesParaCifrar);
     
-    void liberar_vram_apps() {
-        // Lógica para pedir al SO que libere memoria
-        std::cout << "[C++ SYSTEM] Memoria de aplicaciones externas liberada." << std::endl;
+    File.AppendAllText(MemoriaPath, datoCifrado + Environment.NewLine);
+    Console.WriteLine("[MEMORIA] Conocimiento cifrado y guardado en el SSD.");
+}
+
+static string LeerMemoriaEterna()
+{
+    if (!File.Exists(MemoriaPath)) return "Sin recuerdos previos.";
+    string contenidoProtegido = File.ReadAllText(MemoriaPath);
+    
+    // Aquí el motor lo descifra para usarlo internamente
+    try {
+        var lineas = contenidoProtegido.Split(Environment.NewLine);
+        string ultimoRecuerdo = lineas[lineas.Length - 2]; // Tomar el último
+        byte[] bytesDescifrados = Convert.FromBase64String(ultimoRecuerdo);
+        return System.Text.Encoding.UTF8.GetString(bytesDescifrados);
+    } catch {
+        return "Error al leer memoria protegida.";
     }
 }
